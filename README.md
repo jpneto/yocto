@@ -1,2 +1,2 @@
-# yöcto
+# yöċto
 Code Golf programming language
