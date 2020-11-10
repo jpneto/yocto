@@ -2,7 +2,7 @@
 from fractions import Fraction
 from itertools import cycle
 
-from src.codepage import toChr, toOrd, codepage
+from codepage import toChr, toOrd, codepage
 
 def dup(stack):
   stack.append(stack[-1])

@@ -4,7 +4,7 @@ import io
 import sys
 from fractions import Fraction
 
-from engine    import runProgram
+from engine import runProgram
 
 if __name__ == '__main__':
 

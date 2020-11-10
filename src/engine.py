@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from fractions import Fraction
 
-import src.operators as op
+import operators as op
 
 #########################################################################
 
@@ -388,7 +388,7 @@ def isTrue(x):
 
 ############
 
-program = [' 15 "ff" B ']
-data = [Fraction(5)]
-output = runProgram(program, data, True)
-print('output =', output)
+# program = [' 15 "ff" B ']
+# data = [Fraction(5)]
+# output = runProgram(program, data, True)
+# print('output =', output)
