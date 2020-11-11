@@ -164,7 +164,7 @@ def runIf(program, stack, state, counter, isIfThenElse):
     block2 = state['blocks'].pop()  #  then   else
     
   x = stack.pop()
-  if isTrue(x) or isIfThenElse:
+  if op.isTrue(x) or isIfThenElse:
     ifState = {}
     ifState['arity']  = state['arity']
     ifState['vars']   = state['vars']
@@ -173,7 +173,7 @@ def runIf(program, stack, state, counter, isIfThenElse):
     for i in range(state['arity']):
       ifState[parameter_symbols[i]] = state[parameter_symbols[i]]
 
-    ifState['func_code'] = block2 if isTrue(x) and isIfThenElse else block1
+    ifState['func_code'] = block2 if op.isTrue(x) and isIfThenElse else block1
     run(program, stack, ifState)
  
   return counter + 1
@@ -200,7 +200,7 @@ def runForLoop(program, stack, state, counter, invert):
       if invert:
         i = int(x)-i-1
       # a for-loop place the progress variable at the block's beginning
-      loopState['func_code'] = fracToStr(i) + ' ' + loopBlock  # loop body        
+      loopState['func_code'] = op.fracToStr(i) + ' ' + loopBlock  # loop body        
       loopState['vars']['ï'] = Fraction(i)  # progress variable
       run(program, stack, loopState)
       
@@ -209,7 +209,7 @@ def runForLoop(program, stack, state, counter, invert):
       x = x[::-1]
     for i in x:
       # a for-loop place the progress variable at the block's beginning
-      loopState['func_code'] = fracToStr(i) + ' ' + loopBlock  # loop body        
+      loopState['func_code'] = op.fracToStr(i) + ' ' + loopBlock  # loop body        
       loopState['vars']['ï'] = Fraction(i)  # progress variable
       run(program, stack, loopState)
     
@@ -261,18 +261,10 @@ def runWhileLoop(program, stack, state, counter):
   loopState['blocks']    = []
   loopState['func_code'] = loopBlock  # loop body        
   
-  while isTrue(stack.pop()):
+  while op.isTrue(stack.pop()):
     run(program, stack, loopState)
   
   return counter + 1
-
-############################################
-
-def fracToStr(i):
-  if int(i) == i:
-    return ' ' + str(int(i)) + ' '
-  else:
-    return i.numerator + ' ' + i.denominator + ' / '
 
 ############################################
 
@@ -349,14 +341,6 @@ def compute_arity(function_code):
 
 ############################################
 
-def isTrue(x):
-  if isinstance(x, Fraction):
-    return x!=0
-  if isinstance(x, list) or isinstance(x, str):
-    return len(x)>0
-
-############################################
-
 #prints the 5 largets prime numbers under 100, in descending order.
 # program  = ['¹>','¹┅ṗ¹Ḟ0_5:ḷ']  # filter using func 0
 # data     = [Fraction(100)]
@@ -388,7 +372,7 @@ def isTrue(x):
 
 ############
 
-# program = [' 15 "ff" B ']
-# data = [Fraction(5)]
-# output = runProgram(program, data, True)
-# print('output =', output)
+program = ['"abcdef" "23h" i']
+data = [Fraction(5)]
+output = runProgram(program, data, True)
+print('output =', output)

@@ -159,40 +159,372 @@ def product_types(x,y):
 def quocient(stack):
   b = stack.pop()
   a = stack.pop()
-  if isinstance(a,Fraction) and isinstance(a,Fraction):
-    a = int(a)
-    b = int(b)
-    result = a//b
-    stack.append(Fraction(result))
+  stack.append(quocient_types(a,b))
+
+def quocient_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return x//y
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(x // toOrd(c)) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [Fraction(toOrd(c) // y) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(toOrd(i)//toOrd(j)) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(toOrd(i)//toOrd(j)) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ quocient_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ quocient_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [quocient_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [quocient_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ quocient_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ quocient_types(i,j) for (i,j) in zip(cycle(x),y) ]
 
 def module(stack):
   b = stack.pop()
   a = stack.pop()
-  if isinstance(a,Fraction) and isinstance(a,Fraction):
-    a = int(a)
-    b = int(b)
-    result = a%b
-    stack.append(Fraction(result))
+  stack.append(module_types(a,b))
+  
+def module_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return x%y
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(x % toOrd(c)) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(toOrd(c) % y) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(toOrd(i)%toOrd(j)) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(toOrd(i)%toOrd(j)) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ module_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ module_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [module_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [module_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ module_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ module_types(i,j) for (i,j) in zip(cycle(x),y) ]  
 
 def make_fraction(stack):
   b = stack.pop()
   a = stack.pop()
-  stack.append(Fraction(a,b).limit_denominator())
+  stack.append(fraction_types(a,b))
+  
+def fraction_types(x,y):
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(x,y).limit_denominator()
+  
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(x,toOrd(c)) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(toOrd(c),y) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(toOrd(i),toOrd(j)) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(toOrd(i),toOrd(j)) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ fraction_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ fraction_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [fraction_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [fraction_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ fraction_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ fraction_types(i,j) for (i,j) in zip(cycle(x),y) ]  
 
 def power(stack):
   b = stack.pop()
   a = stack.pop()
-  stack.append(a**b)
+  stack.append(power_types(a,b))
+
+def power_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return x**y
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(x ** toOrd(c)) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(toOrd(c) ** y) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(toOrd(i)**toOrd(j)) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(toOrd(i)**toOrd(j)) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ power_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ power_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [power_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [power_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ power_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ power_types(i,j) for (i,j) in zip(cycle(x),y) ]  
 
 def less_than(stack):
   b = stack.pop()
   a = stack.pop()
-  stack.append(Fraction(1) if a<b else Fraction(0))
+  stack.append(less_than_types(a,b))
+    
+def less_than_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x<y else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x<toOrd(c) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)<y else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if i<j else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if i<j else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ less_than_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ less_than_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [less_than_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [less_than_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ less_than_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ less_than_types(i,j) for (i,j) in zip(cycle(x),y) ]     
+
+def greater_than(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(greater_than_types(a,b))
+    
+def greater_than_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x>y else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x>toOrd(c) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)>y else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if i>j else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if i>j else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ greater_than(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ greater_than(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [greater_than(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [greater_than(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ greater_than(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ greater_than(i,j) for (i,j) in zip(cycle(x),y) ]     
+
+def less_eq_than(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(less_eq_than_types(a,b))
+    
+def less_eq_than_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x<=y else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x<=toOrd(c) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)<=y else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if i<=j else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if i<=j else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ less_eq_than_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ less_eq_than_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [less_eq_than_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [less_eq_than_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ less_eq_than_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ less_eq_than_types(i,j) for (i,j) in zip(cycle(x),y) ]     
+
+def greater_eq_than(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(greater_eq_than_types(a,b))
+    
+def greater_eq_than_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x>=y else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x>=toOrd(c) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)>=y else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if i>=j else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if i>=j else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ greater_eq_than_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ greater_eq_than_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [greater_eq_than_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [greater_eq_than_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ greater_eq_than_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ greater_eq_than_types(i,j) for (i,j) in zip(cycle(x),y) ]     
 
 def equals(stack):
   b = stack.pop()
   a = stack.pop()
-  stack.append(Fraction(1) if a==b else Fraction(0))
+  stack.append(equal_types(a,b))
+  
+def equal_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x==y else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x==toOrd(c) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)==y else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if i==j else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if i==j else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ equal_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ equal_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [equal_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [equal_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ equal_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ equal_types(i,j) for (i,j) in zip(cycle(x),y) ]    
+
+def different(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(different_types(a,b))
+  
+def different_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x!=y else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x!=toOrd(c) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)!=y else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if i!=j else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if i!=j else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ different_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ different_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [different_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [different_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ different_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ different_types(i,j) for (i,j) in zip(cycle(x),y) ]    
+
 
 def factorial(stack):
   x = stack.pop()
@@ -205,7 +537,7 @@ def factorial_types(x):
       fact = fact * i 
     return fact
   elif isinstance(x,str):
-    return factorial_types(Fraction(toOrd(x)))
+    return [ factorial_types(Fraction(toOrd(c))) for c in x ]
   elif isinstance(x,list):
     return [factorial_types(i) for i in x]  
 
@@ -254,9 +586,12 @@ def sci_format(stack):
 
 def sci_format_types(x):
   if isinstance(x,Fraction):
-    return Fraction(10**int(x)).limit_denominator(10**abs(int(x)))
+    if x==int(x):
+      return Fraction(10**x).limit_denominator(10**abs(int(x)))
+    else:
+      return Fraction(10**x).limit_denominator(10**abs(int(x))*1000)
   elif isinstance(x,str):
-    return Fraction(1)
+    return [ sci_format_types(Fraction(toOrd(c))) for c in x ]
   elif isinstance(x,list):
     return [ sci_format_types(i) for i in x ]
   
@@ -383,7 +718,7 @@ def make_list_types(x):
   if isinstance(x,Fraction):
     return [x]
   elif isinstance(x,str):
-    return str
+    return [ [c] for c in x ]
   elif isinstance(x,list):
     return [ make_list_types(i) for i in x ]
 
@@ -418,9 +753,9 @@ def length(stack):
   
 def explode_values(stack):  
   x = stack.pop()
-  if isinstance(x,Fraction) or isinstance(x,str):
+  if isinstance(x,Fraction):
     stack.append(x)
-  if isinstance(x,list):
+  if isinstance(x,list) or isinstance(x,str):
     for elem in x:
       stack.append(elem)
 
@@ -436,6 +771,7 @@ def index(stack):
   lst = stack[-1]
   stack.append(index_types(lst, idx))
 
+# same as before, except that removes the list
 def index_pop(stack):
   idx = stack.pop()
   lst = stack.pop()
@@ -443,38 +779,60 @@ def index_pop(stack):
   
 # return x[y]  
 def index_types(x, y):
-  if isinstance(x,Fraction) or isinstance(x,str):
-    return x
-  elif isinstance(y,Fraction):
-    return x[int(y) % len(x)]
-  elif isinstance(x,list) and isinstance(y[0],str):
-    return x[toOrd(y[0]) % len(x)]
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return x.numerator if isTrue(y) else x.denominator 
+  
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ x.numerator if isTrue(c) else x.denominator for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return x[int(y)%len(x)]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    return [ x[toOrd(c)%len(x)] for c in y ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ index_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ index_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [index_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [index_types(i,y)] for i in x ]
+
   elif isinstance(x,list) and isinstance(y,list):
-    return [ x[toInt(i)%len(x)] for i in y ]
+    if len(x) > len(y):
+      return [ index_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ index_types(i,j) for (i,j) in zip(cycle(x),y) ]    
     
 def head_list(stack):
-  lst = stack.pop()
-  if len(lst)>0:
-    stack.append(lst[0])
-  # any other type or empty list, just removes the list
+  x = stack.pop()
+  if isinstance(x,Fraction):
+    return
+  if len(x)>0:          # if [] or "" do nothing
+    stack.append(x[0])
 
 def tail_list(stack):
-  lst = stack.pop()
-  if len(lst)>0:
-    stack.append(lst[1:])
-  # any other type or empty list, just removes the list
-  
+  x = stack.pop()
+  if isinstance(x,Fraction):
+    return
+  if len(x)>0:
+    stack.append(x[1:])
+    
 def init_list(stack):
-  lst = stack.pop()
-  if len(lst)>0:
-    stack.append(lst[:-1])
-  # any other type or empty list, just removes the list
+  x = stack.pop()
+  if isinstance(x,Fraction):
+    return
+  if len(x)>0:
+    stack.append(x[:-1])
 
 def last_list(stack):
-  lst = stack.pop()
-  if len(lst)>0:
-    stack.append(lst[-1])
-  # any other type or empty list, just removes the list
+  x = stack.pop()
+  if isinstance(x,Fraction):
+    return
+  if len(x)>0:
+    stack.append(x[-1])
   
 def invert(stack):
   x = stack.pop()
@@ -493,10 +851,13 @@ def invert_types(x):
 #############################  
 
 def lower_letters(stack):
-  stack.append(list("abcdefghijklmnopqrstuvwxyz"))
+  stack.append("abcdefghijklmnopqrstuvwxyz")
 
 def upper_letters(stack):
-  stack.append(list("ABCDEFGHIJKLMNOPQRSTUWVXYZ"))
+  stack.append("ABCDEFGHIJKLMNOPQRSTUWVXYZ")
+  
+def digits(stack):
+  stack.append("0123456789")
   
 def print_newline(stack):
   print('')
@@ -528,7 +889,19 @@ def toInt(x):
     return toOrd(x)  
   elif isinstance(x, list):
     return len(x)
+  
+def isTrue(x):
+  if isinstance(x, Fraction):
+    return x!=0
+  if isinstance(x, list) or isinstance(x, str):
+    return len(x)>0  
 
+def fracToStr(i):
+  if int(i) == i:
+    return ' ' + str(int(i)) + ' '
+  else:
+    return i.numerator + ' ' + i.denominator + ' / '
+  
 ############################################
 ## define mappings
 ############################################
@@ -545,6 +918,7 @@ mapping['½'] = half
 
 mapping['Ȧ'] = upper_letters
 mapping['Ạ'] = lower_letters
+mapping['Ḍ'] = digits
 mapping['¶'] = print_newline
 
 # unary operators
@@ -559,7 +933,6 @@ mapping['↓'] = decrement
 mapping['!'] = factorial
 mapping['ṗ'] = prime
 mapping['p'] = is_prime
-
 mapping['L'] = make_list
 mapping['l'] = length
 mapping['…'] = makeRange0
@@ -584,17 +957,14 @@ mapping['/'] = make_fraction
 mapping['^'] = power
 mapping['B'] = base
 mapping['E'] = sci_format
-
 mapping['<'] = less_than
+mapping['>'] = greater_than
+mapping['≤'] = less_eq_than
+mapping['≥'] = greater_eq_than
 mapping['='] = equals
-
-
+mapping['≠'] = different
 mapping['i'] = index
 mapping['î'] = index_pop
 mapping['Ḷ'] = make_multiple_list
 mapping['ȧ'] = append_list_begin
 mapping['ạ'] = append_list_end
-
-
-
-
