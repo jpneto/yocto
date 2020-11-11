@@ -164,7 +164,7 @@ def quocient(stack):
 def quocient_types(x,y):
   
   if isinstance(x,Fraction) and isinstance(y,Fraction):
-    return x//y
+    return Fraction(x//y)
 
   elif isinstance(x,Fraction) and isinstance(y,str):
     return [ Fraction(x // toOrd(c)) for c in y ]

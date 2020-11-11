@@ -233,5 +233,12 @@ class TestStringMethods(unittest.TestCase):
     expected = 21
     self.assertEqual(output, expected)
   
+  def test_eval(self):
+    program  = ['15ẋ "x 2÷"ẇ wə']
+    data     = []
+    output   = runProgram(program, data)
+    expected = 7
+    self.assertEqual(output, expected)
+    
 if __name__ == '__main__':
     unittest.main()

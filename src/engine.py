@@ -29,6 +29,7 @@ def runProgram(program, args, verbose=False):
   state['func_code'] = program[-1] # last line is main function
   state['arity']     = len(args)   # function arity
   state['vars']      = {}          # local variables
+  state['iterators'] = {}          # local iterators
   state['blocks']    = []          # stacked blocks
   
   # push inputs into parameters variables and save them in state
@@ -99,6 +100,16 @@ def run(program, stack, state, counter=0):
       stack.append(state['vars'][symbol])
       counter += 1
 
+    elif symbol in 'ẉỵẓ':            # iterator use
+      if symbol not in state['iterators']: # if NA, define it
+        state['iterators'][symbol] = 0   # init current index
+      variable  = 'wxy'['ẉỵẓ'.index(symbol)]
+      var_index = state['iterators'][symbol]
+      var_list  = state['vars'][variable]
+      stack.append(var_list[var_index])
+      state['iterators'][symbol] = (state['iterators'][symbol]+1) % len(var_list)
+      counter += 1      
+  
     elif symbol in '?⁇':            # conditionals
       counter = runIf(program, stack, state, counter, symbol!='?')
 
@@ -112,7 +123,7 @@ def run(program, stack, state, counter=0):
       counter = runWhileLoop(program, stack, state, counter)
 
     elif symbol in '{':             # block expression
-      block, counter = readBlock(code, counter+1)  # +1 skips '{'
+      block, counter = readBlock(code, counter+1)  # +1 skips '{' 
       state['blocks'].append(block)
     
     elif symbol in op.mapping:      # default operation
@@ -130,10 +141,29 @@ def run(program, stack, state, counter=0):
         function_id, counter    = readNumber(code, counter)
         func_state['arity']     = 'δλνμ'.index(symbol)
         func_state['vars']      = {}
+        func_state['iterators'] = {}
         func_state['func_code'] = program[function_id]
 
       runFunction(program, stack, func_state)
       
+    elif symbol in 'ə':            # eval command
+      counter += 1
+      eval_state = {}       
+      eval_state['blocks']    = [] # eval calls don't share blocks
+      eval_state['arity']     = state['arity']
+      eval_state['vars']      = state['vars']
+      eval_state['iterators'] = state['iterators']
+      
+      expression = stack.pop()
+      if isinstance(expression, Fraction):
+        expression = op.fracToStr(expression)
+      elif isinstance(expression, str):
+        eval_state['func_code'] = expression # must be string
+      else:
+        eval_state['func_code'] = '¤'  # if list, do nothing
+     
+      run(program, stack, eval_state)
+    
     else:
       # unassigned symbol (do nothing). If needed, use symbol ¤
       counter += 1
@@ -166,10 +196,11 @@ def runIf(program, stack, state, counter, isIfThenElse):
   x = stack.pop()
   if op.isTrue(x) or isIfThenElse:
     ifState = {}
-    ifState['arity']  = state['arity']
-    ifState['vars']   = state['vars']
-    ifState['blocks'] = []
-    parameter_symbols = '¹²³⁴⁵⁶⁷⁸⁹⁰'[:state['arity']][::-1]
+    ifState['arity']     = state['arity']
+    ifState['vars']      = state['vars']
+    ifState['iterators'] = state['iterators']
+    ifState['blocks']    = []
+    parameter_symbols    = '¹²³⁴⁵⁶⁷⁸⁹⁰'[:state['arity']][::-1]
     for i in range(state['arity']):
       ifState[parameter_symbols[i]] = state[parameter_symbols[i]]
 
@@ -185,8 +216,9 @@ def runForLoop(program, stack, state, counter, invert):
 
   loopBlock = state['blocks'].pop()
   loopState = {}
-  loopState['arity']  = state['arity']
-  loopState['vars']   = state['vars']
+  loopState['arity']     = state['arity']
+  loopState['vars']      = state['vars']
+  loopState['iterators'] = state['iterators']
   parameter_symbols = '¹²³⁴⁵⁶⁷⁸⁹⁰'[:state['arity']][::-1]
   for i in range(state['arity']):
     loopState[parameter_symbols[i]] = state[parameter_symbols[i]]
@@ -217,14 +249,14 @@ def runForLoop(program, stack, state, counter, invert):
 
 ############################################
 
-# stack top can be Fraction, list of Fractions
 # same as For without the progress variable
 def runRepeatLoop(program, stack, state, counter):
 
   loopBlock = state['blocks'].pop()
   loopState = {}
-  loopState['arity']  = state['arity']
-  loopState['vars']   = state['vars']
+  loopState['arity']     = state['arity']
+  loopState['vars']      = state['vars']
+  loopState['iterators'] = state['iterators']
   parameter_symbols = '¹²³⁴⁵⁶⁷⁸⁹⁰'[:state['arity']][::-1]
   for i in range(state['arity']):
     loopState[parameter_symbols[i]] = state[parameter_symbols[i]]
@@ -234,13 +266,13 @@ def runRepeatLoop(program, stack, state, counter):
   # there are two options, stack's top is a number or a indexed type
   if (isinstance(x, Fraction)):
     # regular for loop
-    for i in range(int(x)):
+    for _ in range(int(x)):
       # a for-loop place the progress variable at the block's beginning
       loopState['func_code'] = loopBlock  # loop body        
       run(program, stack, loopState)
       
   else: # or else, it is a for-each
-    for i in x:
+    for _ in x:
       # a for-loop place the progress variable at the block's beginning
       loopState['func_code'] = loopBlock  # loop body        
       run(program, stack, loopState)
@@ -255,6 +287,7 @@ def runWhileLoop(program, stack, state, counter):
   loopState = {}
   loopState['arity']     = state['arity']
   loopState['vars']      = state['vars']  
+  loopState['iterators'] = state['iterators']  
   parameter_symbols = '¹²³⁴⁵⁶⁷⁸⁹⁰'[:state['arity']][::-1]
   for i in range(state['arity']):
     loopState[parameter_symbols[i]] = state[parameter_symbols[i]]  
@@ -372,7 +405,7 @@ def compute_arity(function_code):
 
 ############
 
-program = ['"abcdef" "23h" i']
-data = [Fraction(5)]
+program = ['15ẋ "x 2÷"ẇ wə'] 
+data = []
 output = runProgram(program, data, True)
 print('output =', output)
