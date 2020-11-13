@@ -122,6 +122,9 @@ def run(program, stack, state, counter=0):
     elif symbol in 'W':             # WHILE loop
       counter = runWhileLoop(program, stack, state, counter)
 
+    elif symbol in 'Y':             # FIXED-POINT loop
+      counter = runFixedPointLoop(program, stack, state, counter)
+
     elif symbol in '{':             # block expression
       block, counter = readBlock(code, counter+1)  # +1 skips '{' 
       state['blocks'].append(block)
@@ -301,6 +304,29 @@ def runWhileLoop(program, stack, state, counter):
 
 ############################################
 
+def runFixedPointLoop(program, stack, state, counter):
+  loopBlock = state['blocks'].pop()
+
+  loopState = {}
+  loopState['arity']     = state['arity']
+  loopState['vars']      = state['vars']  
+  loopState['iterators'] = state['iterators']  
+  parameter_symbols = '¹²³⁴⁵⁶⁷⁸⁹⁰'[:state['arity']][::-1]
+  for i in range(state['arity']):
+    loopState[parameter_symbols[i]] = state[parameter_symbols[i]]  
+  loopState['blocks']    = []
+  loopState['func_code'] = loopBlock  # loop body        
+  
+  guard = True
+  while guard:               # do-while
+    previous_top = stack[-1]
+    run(program, stack, loopState)
+    guard = previous_top != stack[-1] # repeat if changed
+  
+  return counter + 1
+
+############################################
+
 def readNumber(code, counter):
   
   if code[counter] == '_':
@@ -405,7 +431,7 @@ def compute_arity(function_code):
 
 ############
 
-program = ['15ẋ "x 2÷"ẇ wə'] 
-data = []
-output = runProgram(program, data, True)
-print('output =', output)
+# program = ['9┅ẇ 0{ẉ<5 {1}?,}Y'] 
+# data = []
+# output = runProgram(program, data, True)
+# print('output =', output)
