@@ -525,6 +525,132 @@ def different_types(x,y):
     else:
       return [ different_types(i,j) for (i,j) in zip(cycle(x),y) ]    
 
+def apply_or(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(apply_or_types(a,b))
+  
+def apply_or_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x!=0 or y!=0 else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x!=0 or toOrd(c)!=0 else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)!=0 or y!=0 else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if toOrd(i)!=0 or toOrd(j)!=0 else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if toOrd(i)!=0 or toOrd(j)!=0 else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ apply_or_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ apply_or_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [apply_or_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [apply_or_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ apply_or_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ apply_or_types(i,j) for (i,j) in zip(cycle(x),y) ]    
+
+def apply_and(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(apply_and_types(a,b))
+  
+def apply_and_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if x!=0 and y!=0 else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if x!=0 and toOrd(c)!=0 else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if toOrd(c)!=0 and y!=0 else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if toOrd(i)!=0 and toOrd(j)!=0 else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if toOrd(i)!=0 and toOrd(j)!=0 else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ apply_and_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ apply_and_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [apply_and_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [apply_and_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ apply_and_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ apply_and_types(i,j) for (i,j) in zip(cycle(x),y) ]    
+
+def apply_xor(stack):
+  b = stack.pop()
+  a = stack.pop()
+  stack.append(apply_xor_types(a,b))
+  
+# n1,n2 are numbers  
+def xor(n1,n2):
+  return (n1==0 and n2!=0) or (n1!=0 and n2==0)
+  
+def apply_xor_types(x,y):
+  
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction(1) if xor(x,y) else Fraction(0)
+
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return [ Fraction(1) if xor(x,toOrd(c)) else Fraction(0) for c in y ]
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return [ Fraction(1) if xor(toOrd(c),y) else Fraction(0) for c in x ]
+
+  elif isinstance(x,str) and isinstance(y,str):
+    if len(x) > len(y):
+      return [ Fraction(1) if xor(toOrd(i),toOrd(j)) else Fraction(0) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ Fraction(1) if xor(toOrd(i),toOrd(j)) else Fraction(0) for (i,j) in zip(cycle(x),y) ]
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ apply_xor_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ apply_xor_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [apply_xor_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [apply_xor_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    if len(x) > len(y):
+      return [ apply_xor_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    else:
+      return [ apply_xor_types(i,j) for (i,j) in zip(cycle(x),y) ]    
+
+def apply_not(stack):
+  x = stack.pop()
+  stack.append(apply_not_types(x)) 
+
+def apply_not_types(x):
+  if isinstance(x,Fraction):
+    return Fraction(1) if x==0 else Fraction(0)
+  elif isinstance(x,str):
+    return [ apply_not_types(Fraction(toOrd(c))) for c in x ]
+  elif isinstance(x,list):
+    return [apply_not_types(i) for i in x]  
 
 def factorial(stack):
   x = stack.pop()
@@ -848,6 +974,10 @@ def invert_types(x):
   elif isinstance(x,list) or isinstance(x,str): 
     return x[::-1]
   
+#############################
+  
+  
+  
 #############################  
 
 def lower_letters(stack):
@@ -930,6 +1060,7 @@ mapping[','] = lambda stack : println(stack,' ')
 mapping['🡔'] = pop
 mapping['↑'] = increment
 mapping['↓'] = decrement
+mapping['¬'] = apply_not
 mapping['!'] = factorial
 mapping['ṗ'] = prime
 mapping['p'] = is_prime
@@ -963,8 +1094,13 @@ mapping['≤'] = less_eq_than
 mapping['≥'] = greater_eq_than
 mapping['='] = equals
 mapping['≠'] = different
+mapping['|'] = apply_or
+mapping['&'] = apply_and
+mapping['⊻'] = apply_xor
+
 mapping['i'] = index
 mapping['î'] = index_pop
 mapping['Ḷ'] = make_multiple_list
 mapping['ȧ'] = append_list_begin
 mapping['ạ'] = append_list_end
+

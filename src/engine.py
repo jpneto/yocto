@@ -125,6 +125,15 @@ def run(program, stack, state, counter=0):
     elif symbol in 'Y':             # FIXED-POINT loop
       counter = runFixedPointLoop(program, stack, state, counter)
 
+    elif symbol in 'Ṁ':             # functional map
+      counter = runMap(program, stack, state, counter)
+
+    elif symbol in 'Ḟ':             # functional filter
+      counter = runFilter(program, stack, state, counter)
+
+    elif symbol in 'Ṙ':             # functional reduce
+      counter = runReduce(program, stack, state, counter)
+
     elif symbol in '{':             # block expression
       block, counter = readBlock(code, counter+1)  # +1 skips '{' 
       state['blocks'].append(block)
@@ -187,6 +196,97 @@ def runFunction(program, stack, state, counter=0):
     stack.append(state[symbol])
   
   run(program, stack, state)
+
+############################################
+
+def runMap(program, stack, state, counter):
+  
+  function_id = int(stack.pop()) # which unary function to execute
+  xs          = stack.pop()      # a list to map function
+  
+  if isinstance(xs, Fraction):
+    xs = [xs]
+  elif isinstance(xs, str):
+    xs = list(xs)
+
+  # prepare state for function call
+  func_state = {}       
+  func_state['blocks']    = [] # function calls don't share blocks      
+  func_state['arity']     = 1
+  func_state['vars']      = {}
+  func_state['iterators'] = {}
+  func_state['func_code'] = program[function_id]
+
+  results = []  
+  for x in xs:
+    stack.append(x)
+    runFunction(program, stack, func_state)
+    results.append(stack.pop())
+    
+  stack.append(results)
+  return counter + 1
+
+############################################
+
+def runFilter(program, stack, state, counter):
+  
+  function_id = int(stack.pop()) # which unary function to execute
+  xs          = stack.pop()      # a list to filter function
+
+  if isinstance(xs, Fraction):
+    xs = [xs]
+  elif isinstance(xs, str):
+    xs = list(xs)
+
+  # prepare state for function call
+  func_state = {}       
+  func_state['blocks']    = [] # function calls don't share blocks      
+  func_state['arity']     = 1
+  func_state['vars']      = {}
+  func_state['iterators'] = {}
+  func_state['func_code'] = program[function_id]
+
+  results = []  
+  for x in xs:
+    stack.append(x)
+    runFunction(program, stack, func_state)
+    output = stack.pop()
+    if output != 0:
+      results.append(x)
+    
+  stack.append(results)
+  return counter + 1
+
+############################################
+
+def runReduce(program, stack, state, counter):
+  
+  function_id = int(stack.pop()) # which binary function to execute
+  default_val = stack.pop()      # neutral element of function operation
+  xs          = stack.pop()      # a list to filter function
+
+  if isinstance(xs, Fraction):
+    xs = [xs]
+  elif isinstance(xs, str):
+    xs = list(xs)
+
+  # prepare state for function call
+  func_state = {}       
+  func_state['blocks']    = [] # function calls don't share blocks      
+  func_state['arity']     = 2
+  func_state['vars']      = {}
+  func_state['iterators'] = {}
+  func_state['func_code'] = program[function_id]
+
+  result = default_val
+  for x in xs[::-1]:     # f(x1, f(x2, ... f(xn,default)))
+    stack.append(x)     
+    stack.append(result)
+    runFunction(program, stack, func_state)
+    result = stack.pop()
+    
+  stack.append(result)  
+  return counter + 1
 
 ############################################
 
@@ -350,7 +450,7 @@ def readString(code, counter):
   counter += 1
   while code[counter] != '"':
     result += code[counter]
-    counter  += 1
+    counter += 1
   return (result, counter)    
 
 ############################################
@@ -431,7 +531,7 @@ def compute_arity(function_code):
 
 ############
 
-# program = ['9┅ẇ 0{ẉ<5 {1}?,}Y'] 
-# data = []
-# output = runProgram(program, data, True)
-# print('output =', output)
+program = ['2%¬','5┅0Ḟ'] 
+data = []
+output = runProgram(program, data, True)
+print('output =', output)

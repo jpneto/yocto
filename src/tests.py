@@ -239,6 +239,41 @@ class TestStringMethods(unittest.TestCase):
     output   = runProgram(program, data)
     expected = 7
     self.assertEqual(output, expected)
+
+  def test_map1(self):
+    program  = ['2*','3-','8…1Ṁ']
+    data     = []
+    output   = runProgram(program, data)
+    expected = [-3, -2, -1, 0, 1, 2, 3, 4]
+    self.assertEqual(output, expected)
+    
+  def test_map2(self):
+    program  = ['2*','3-','8…0Ṁ']
+    data     = []
+    output   = runProgram(program, data)
+    expected = [0, 2, 4, 6, 8, 10, 12, 14]
+    self.assertEqual(output, expected)
+
+  def test_filter1(self):
+    program  = ['2<','2>','8…1Ḟ 8…0Ḟ +']
+    data     = []
+    output   = runProgram(program, data)
+    expected = [3, 5, 5, 7, 7]
+    self.assertEqual(output, expected)
+
+  def test_reduce1(self):
+    program  = ['+','5┅ 0 0Ṙ']   # fold (+) 0 xs
+    data     = []
+    output   = runProgram(program, data)
+    expected = 15
+    self.assertEqual(output, expected)
+
+  def test_reduce2(self):
+    program  = ['*','┅1 0Ṙ']   # fold (*) 1 xs
+    data     = [Fraction(5)]
+    output   = runProgram(program, data)
+    expected = 120
+    self.assertEqual(output, expected)
     
 if __name__ == '__main__':
     unittest.main()
