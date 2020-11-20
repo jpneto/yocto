@@ -652,6 +652,18 @@ def apply_not_types(x):
   elif isinstance(x,list):
     return [apply_not_types(i) for i in x]  
 
+def make_ord(stack):
+  x = stack.pop()
+  stack.append(make_ord_types(x)) 
+
+def make_ord_types(x):
+  if isinstance(x,Fraction):
+    return [ Fraction(toOrd(c)) for c in str(x) ]
+  elif isinstance(x,str):
+    return [ Fraction(toOrd(c)) for c in x ]
+  elif isinstance(x,list):
+    return [make_ord_types(i) for i in x]  
+
 def factorial(stack):
   x = stack.pop()
   stack.append(factorial_types(x)) 
@@ -975,6 +987,23 @@ def invert_types(x):
     return x[::-1]
   
 
+def make_sum(stack):
+  x = stack.pop()
+  stack.append(make_sum_types(x))
+
+def make_sum_types(x):
+  if isinstance(x,Fraction): 
+    digits = str(int(x))
+    result = 0
+    for d in digits:
+      result += int(d)
+    return Fraction(result)
+  elif isinstance(x,str): 
+    return Fraction(sum([int(toOrd(c)) for c in x]))
+  elif isinstance(x,list): 
+    return Fraction(sum([make_sum_types(i) for i in x]))
+
+  
 def concatenate(stack):
   idx = stack.pop()
   lst = stack.pop()
@@ -1008,7 +1037,7 @@ def concatenate_types(x, y):
     #   return [ concatenate_types(i,j) for (i,j) in zip(x,cycle(y)) ]
     # else:
     #   return [ concatenate_types(i,j) for (i,j) in zip(cycle(x),y) ]
-    
+   
 #############################  
 
 def vectorized_assign(stack):
@@ -1117,6 +1146,7 @@ mapping['🡔'] = pop
 mapping['↑'] = increment
 mapping['↓'] = decrement
 mapping['¬'] = apply_not
+mapping['o'] = make_ord
 mapping['!'] = factorial
 mapping['ṗ'] = prime
 mapping['p'] = is_prime
@@ -1131,6 +1161,11 @@ mapping['ṫ'] = tail_list
 mapping['ḥ'] = init_list
 mapping['ṭ'] = last_list
 mapping['ḷ'] = invert
+mapping['Σ'] = make_sum
+
+# mapping['ȧ'] = make_uppercase
+# mapping['ạ'] = make_lowercase
+
 
 # binary operators
 
@@ -1154,7 +1189,6 @@ mapping['|'] = apply_or
 mapping['&'] = apply_and
 mapping['⊻'] = apply_xor
 mapping['c'] = concatenate
-
 
 mapping['i'] = index
 mapping['î'] = index_pop

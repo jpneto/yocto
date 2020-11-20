@@ -3,8 +3,8 @@
            # 0123456789ABCDEF
 codepage = ('0123456789abcdef',     #0
             'ghijklmnopqrstuv',     #1
-            'wxyzABCDEFGHIJKL',     #2
-            'MNOPQRSTUVWXYZ \n',    #3   
+            'wxyz ABCDEFGHIJK',     #2
+            'LMNOPQRSTUVWXYZ\n',    #3   
             '¹²³⁴⁵⁶⁷⁸⁹⁰⁺⁼|&¬⊻',     #4  
             '=≠<>≤≥_+-*/÷%^!?',     #5
             ',;.:«»()[]{}’"¶$',     #6 
