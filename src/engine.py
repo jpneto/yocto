@@ -128,11 +128,20 @@ def run(program, stack, state, counter=0):
     elif symbol in 'Ṁ':             # functional map
       counter = runMap(program, stack, state, counter)
 
+    elif symbol in 'Ċ':             # functional clear
+      counter = runClear(program, stack, state, counter)
+
     elif symbol in 'Ḟ':             # functional filter
       counter = runFilter(program, stack, state, counter)
 
     elif symbol in 'Ṙ':             # functional reduce
       counter = runReduce(program, stack, state, counter)
+
+    elif symbol in 'Ṡ':             # functional scan
+      counter = runScan(program, stack, state, counter)
+
+    elif symbol in 'Ż':             # functional binary zipWith
+      counter = runZipWith2(program, stack, state, counter)
 
     elif symbol in '{':             # block expression
       block, counter = readBlock(code, counter+1)  # +1 skips '{' 
@@ -152,7 +161,7 @@ def run(program, stack, state, counter=0):
       if code[counter] in '0123456789': 
         function_id, counter    = readNumber(code, counter)
         func_state['arity']     = 'δλνμ'.index(symbol)
-        func_state['vars']      = {}
+        func_state['vars']      = state['vars']
         func_state['iterators'] = {}
         func_state['func_code'] = program[function_id]
 
@@ -213,7 +222,7 @@ def runMap(program, stack, state, counter):
   func_state = {}       
   func_state['blocks']    = [] # function calls don't share blocks      
   func_state['arity']     = 1
-  func_state['vars']      = {}
+  func_state['vars']      = state['vars']
   func_state['iterators'] = {}
   func_state['func_code'] = program[function_id]
 
@@ -222,6 +231,39 @@ def runMap(program, stack, state, counter):
     stack.append(x)
     runFunction(program, stack, func_state)
     results.append(stack.pop())
+    
+  stack.append(results)
+  return counter + 1
+
+############################################
+
+def runClear(program, stack, state, counter):
+  
+  function_id = int(stack.pop()) # which unary predicate to execute
+  xs          = stack.pop()      # a list to clear elements
+
+  if isinstance(xs, Fraction):
+    xs = [xs]
+  elif isinstance(xs, str):
+    xs = list(xs)
+
+  # prepare state for function call
+  func_state = {}       
+  func_state['blocks']    = [] # function calls don't share blocks      
+  func_state['arity']     = 1
+  func_state['vars']      = state['vars']
+  func_state['iterators'] = {}
+  func_state['func_code'] = program[function_id]
+
+  results = []  
+  for x in xs:
+    stack.append(x)
+    runFunction(program, stack, func_state)
+    output = stack.pop()
+    if output == 0:
+      results.append('')
+    else:
+      results.append(x)
     
   stack.append(results)
   return counter + 1
@@ -242,7 +284,7 @@ def runFilter(program, stack, state, counter):
   func_state = {}       
   func_state['blocks']    = [] # function calls don't share blocks      
   func_state['arity']     = 1
-  func_state['vars']      = {}
+  func_state['vars']      = state['vars']
   func_state['iterators'] = {}
   func_state['func_code'] = program[function_id]
 
@@ -274,7 +316,7 @@ def runReduce(program, stack, state, counter):
   func_state = {}       
   func_state['blocks']    = [] # function calls don't share blocks      
   func_state['arity']     = 2
-  func_state['vars']      = {}
+  func_state['vars']      = state['vars']
   func_state['iterators'] = {}
   func_state['func_code'] = program[function_id]
 
@@ -286,6 +328,68 @@ def runReduce(program, stack, state, counter):
     result = stack.pop()
     
   stack.append(result)  
+  return counter + 1
+
+############################################
+
+def runScan(program, stack, state, counter):
+  
+  function_id = int(stack.pop()) # which binary function to execute
+  default_val = stack.pop()      # neutral element of function operation
+  xs          = stack.pop()      # a list to filter function
+
+  if isinstance(xs, Fraction):
+    xs = [xs]
+  elif isinstance(xs, str):
+    xs = list(xs)
+
+  # prepare state for function call
+  func_state = {}       
+  func_state['blocks']    = [] # function calls don't share blocks      
+  func_state['arity']     = 2
+  func_state['vars']      = state['vars']
+  func_state['iterators'] = {}
+  func_state['func_code'] = program[function_id]
+
+  results = [default_val]
+  for x in xs:     # accumulate reduce results
+    stack.append(x)     
+    stack.append(results[-1])
+    runFunction(program, stack, func_state)
+    results.append( stack.pop() )
+    
+  stack.append(results)  
+  return counter + 1
+
+############################################
+
+def runZipWith2(program, stack, state, counter):
+  
+  function_id = int(stack.pop()) # which binary function to execute
+  ys          = stack.pop()      # second list
+  xs          = stack.pop()      # first list
+
+  if isinstance(xs, Fraction):
+    xs = [xs]
+  elif isinstance(xs, str):
+    xs = list(xs)
+
+  # prepare state for function call
+  func_state = {}       
+  func_state['blocks']    = [] # function calls don't share blocks      
+  func_state['arity']     = 2
+  func_state['vars']      = state['vars']
+  func_state['iterators'] = {}
+  func_state['func_code'] = program[function_id]
+
+  results = []
+  for x,y in zip(xs,ys):   # zip lists
+    stack.append(x)     
+    stack.append(y)     
+    runFunction(program, stack, func_state)
+    results.append( stack.pop() )
+    
+  stack.append(results)  
   return counter + 1
 
 ############################################
@@ -471,7 +575,8 @@ def readBlock(code, counter):
 
 # translate final result (which can be from diff types) for simple output
 def outputValue(value):
-  if isinstance(value, list) and len(value)>0 and isinstance(value[0], str):
+  if (isinstance(value, list) and len(value)>0 and 
+     all([isinstance(x, str) and len(x)==1 for x in value])):    # it is a string
     return ''.join(value)
   elif isinstance(value, list):
     return [ outputValue(x) for x in value ]
@@ -531,7 +636,14 @@ def compute_arity(function_code):
 
 ############
 
-program = ['2%¬','5┅0Ḟ'] 
-data = []
-output = runProgram(program, data, True)
-print('output =', output)
+# program = ['Lw*', '3%¬', '5%¬', 
+#            '3%¹5%&', 'c',
+#            '2Eẇw┅ẋ"Fizz"λ0x2Ṁ*"Buzz"λ0x1Ṁ*4Żx3Ċ4Ż']  
+
+# data = []
+# output = runProgram(program, data, True)
+# print('output =', output)
+
+
+
+

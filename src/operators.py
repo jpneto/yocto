@@ -141,9 +141,9 @@ def product_types(x,y):
     return [ [i+j] for i in x for j in y ] # cartesian product
   
   elif isinstance(x,Fraction) and isinstance(y,list):
-    return [ product_types(x,i) for i in y ]
+    return y*int(x)
   elif isinstance(x,list) and isinstance(y,Fraction):
-    return [ product_types(i,y) for i in x ]
+    return x*int(y)
 
   elif isinstance(x,str) and isinstance(y,list):
     return [ [product_types(x,i)] for i in y ]
@@ -844,7 +844,7 @@ def make_list_types(x):
   if isinstance(x,Fraction):
     return [x]
   elif isinstance(x,str):
-    return [ [c] for c in x ]
+    return [x] # [ [c] for c in x ]
   elif isinstance(x,list):
     return [ make_list_types(i) for i in x ]
 
@@ -974,10 +974,41 @@ def invert_types(x):
   elif isinstance(x,list) or isinstance(x,str): 
     return x[::-1]
   
-#############################
+
+def concatenate(stack):
+  idx = stack.pop()
+  lst = stack.pop()
+  stack.append(concatenate_types(lst, idx))
   
+def concatenate_types(x, y):
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    return Fraction( str(x) + str(y) )
   
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return str(x)+y
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return x+str(y)
+
+  elif isinstance(x,str) and isinstance(y,str):
+    return x+y
   
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ concatenate_types(x,i) for i in y ]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ concatenate_types(i,y) for i in x ]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [concatenate_types(x,i)] for i in y ]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [concatenate_types(i,y)] for i in x ]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    return x+y
+    # if len(x) > len(y):
+    #   return [ concatenate_types(i,j) for (i,j) in zip(x,cycle(y)) ]
+    # else:
+    #   return [ concatenate_types(i,j) for (i,j) in zip(cycle(x),y) ]
+    
 #############################  
 
 def lower_letters(stack):
@@ -1097,6 +1128,8 @@ mapping['≠'] = different
 mapping['|'] = apply_or
 mapping['&'] = apply_and
 mapping['⊻'] = apply_xor
+mapping['c'] = concatenate
+
 
 mapping['i'] = index
 mapping['î'] = index_pop
