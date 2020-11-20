@@ -1011,6 +1011,31 @@ def concatenate_types(x, y):
     
 #############################  
 
+def vectorized_assign(stack):
+  new_value = stack.pop()
+  idxs      = stack.pop()
+  values    = stack.pop()
+  stack.append(vectorized_assign_types(new_value, idxs, values))
+  
+def vectorized_assign_types(x, idxs, values):
+  if not (isinstance(idxs,list) and isinstance(values,list)):
+    return values # leave the original list unchanged
+  
+  result = values[:] # make a copy
+  
+  if isinstance(x,Fraction) or isinstance(x,str):
+    for idx in idxs:
+      if idx >= 0 and idx < len(result):
+        result[int(idx)] = x
+  
+  if isinstance(x,list):
+    for (idx,xi) in zip(idxs,cycle(x)):
+      result[int(idx)] = xi
+    
+  return result  
+
+#############################
+
 def lower_letters(stack):
   stack.append("abcdefghijklmnopqrstuvwxyz")
 
@@ -1137,3 +1162,6 @@ mapping['Ḷ'] = make_multiple_list
 mapping['ȧ'] = append_list_begin
 mapping['ạ'] = append_list_end
 
+# terciary operators
+
+mapping['V'] = vectorized_assign

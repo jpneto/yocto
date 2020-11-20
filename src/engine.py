@@ -640,10 +640,14 @@ def compute_arity(function_code):
 #            '3%¹5%&', 'c',
 #            '2Eẇw┅ẋ"Fizz"λ0x2Ṁ*"Buzz"λ0x1Ṁ*4Żx3Ċ4Ż']  
 
+#program = ['2E┅ẇ  w w3* "Fizz"V  w5* "Buzz"V w15* "FizzBuzz"V']
+#program = ['10┅ 7┅ 3┅V']
+
+
+# program = ['3*','5*','15*',
+#            '101…ẇww0Ṁ"Fizz"Vw1Ṁ"Buzz"Vw2Ṁ"FizzBuzz"Vṫ']
 # data = []
 # output = runProgram(program, data, True)
 # print('output =', output)
-
-
 
 
