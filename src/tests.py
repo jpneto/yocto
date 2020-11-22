@@ -286,19 +286,19 @@ class TestStringMethods(unittest.TestCase):
   def test_fizzBuzz(self):
     program = ['Lw*', '3%¬', '5%¬', 
                '3%¹5%&', 'c',
-               'ẇw┅ẋ "Fizz"λ0x2Ṁ* "Buzz"λ0x1Ṁ* 4Ż x3Ċ 4Ż']  # 56 bytes
+               'ẇw┅ẋ "Fizz"λ0x1Ṁ* "Buzz"λ0x2Ṁ* 4Ż x3Ċ 4Ż']  # 56 bytes
     data     = [Fraction(10)]
     output   = runProgram(program, data)
-    expected = ['1', '2', 'Buzz', '4', 'Fizz', 'Buzz', '7', '8', 'Buzz', 'Fizz']
+    expected = ['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz']
     self.assertEqual(output, expected)
     
   def test_fizzBuzz2(self):
     program = ['Lw*', '3%¬', '5%¬', 
                '3%¹5%&', 'c',
-               '2Eẇw┅ẋ"Fizz"λ0x2Ṁ*"Buzz"λ0x1Ṁ*4Żx3Ċ4Ż']  # 58 bytes
+               '2Eẇw┅ẋ"Fizz"λ0x1Ṁ*"Buzz"λ0x2Ṁ*4Żx3Ċ4Ż']  # 58 bytes
     data     = []
     output   = runProgram(program, data)
-    expected = ['1', '2', 'Buzz', '4', 'Fizz', 'Buzz', '7', '8', 'Buzz', 'Fizz', '11', 'Buzz', '13', '14', 'FizzBuzz', '16', '17', 'Buzz', '19', 'Fizz', 'Buzz', '22', '23', 'Buzz', 'Fizz', '26', 'Buzz', '28', '29', 'FizzBuzz', '31', '32', 'Buzz', '34', 'Fizz', 'Buzz', '37', '38', 'Buzz', 'Fizz', '41', 'Buzz', '43', '44', 'FizzBuzz', '46', '47', 'Buzz', '49', 'Fizz', 'Buzz', '52', '53', 'Buzz', 'Fizz', '56', 'Buzz', '58', '59', 'FizzBuzz', '61', '62', 'Buzz', '64', 'Fizz', 'Buzz', '67', '68', 'Buzz', 'Fizz', '71', 'Buzz', '73', '74', 'FizzBuzz', '76', '77', 'Buzz', '79', 'Fizz', 'Buzz', '82', '83', 'Buzz', 'Fizz', '86', 'Buzz', '88', '89', 'FizzBuzz', '91', '92', 'Buzz', '94', 'Fizz', 'Buzz', '97', '98', 'Buzz', 'Fizz']
+    expected = ['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz', '16', '17', 'Fizz', '19', 'Buzz', 'Fizz', '22', '23', 'Fizz', 'Buzz', '26', 'Fizz', '28', '29', 'FizzBuzz', '31', '32', 'Fizz', '34', 'Buzz', 'Fizz', '37', '38', 'Fizz', 'Buzz', '41', 'Fizz', '43', '44', 'FizzBuzz', '46', '47', 'Fizz', '49', 'Buzz', 'Fizz', '52', '53', 'Fizz', 'Buzz', '56', 'Fizz', '58', '59', 'FizzBuzz', '61', '62', 'Fizz', '64', 'Buzz', 'Fizz', '67', '68', 'Fizz', 'Buzz', '71', 'Fizz', '73', '74', 'FizzBuzz', '76', '77', 'Fizz', '79', 'Buzz', 'Fizz', '82', '83', 'Fizz', 'Buzz', '86', 'Fizz', '88', '89', 'FizzBuzz', '91', '92', 'Fizz', '94', 'Buzz', 'Fizz', '97', '98', 'Fizz', 'Buzz']
     self.assertEqual(output, expected)    
 
   def test_fizzBuzz3(self):
@@ -309,6 +309,14 @@ class TestStringMethods(unittest.TestCase):
     expected = [1, 2, 'Fizz', 4, 'Buzz', 'Fizz', 7, 8, 'Fizz', 'Buzz', 11, 'Fizz', 13, 14, 'FizzBuzz', 16, 17, 'Fizz', 19, 'Buzz', 'Fizz', 22, 23, 'Fizz', 'Buzz', 26, 'Fizz', 28, 29, 'FizzBuzz', 31, 32, 'Fizz', 34, 'Buzz', 'Fizz', 37, 38, 'Fizz', 'Buzz', 41, 'Fizz', 43, 44, 'FizzBuzz', 46, 47, 'Fizz', 49, 'Buzz', 'Fizz', 52, 53, 'Fizz', 'Buzz', 56, 'Fizz', 58, 59, 'FizzBuzz', 61, 62, 'Fizz', 64, 'Buzz', 'Fizz', 67, 68, 'Fizz', 'Buzz', 71, 'Fizz', 73, 74, 'FizzBuzz', 76, 77, 'Fizz', 79, 'Buzz', 'Fizz', 82, 83, 'Fizz', 'Buzz', 86, 'Fizz', 88, 89, 'FizzBuzz', 91, 92, 'Fizz', 94, 'Buzz', 'Fizz', 97, 98, 'Fizz', 'Buzz']
     self.assertEqual(output, expected)   
     
+  def test_fizzBuzz4(self):
+    program = ['3%¹5%&','c', 
+               '2E┅0ĊØ2*"Fizz"ạ34*1ŻØ4*"Buzz"ạ34*1Ż'] # 34 bytes
+    data     = []
+    output   = runProgram(program, data)
+    expected = ['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'FizzBuzz', '16', '17', 'Fizz', '19', 'Buzz', 'Fizz', '22', '23', 'Fizz', 'Buzz', '26', 'Fizz', '28', '29', 'FizzBuzz', '31', '32', 'Fizz', '34', 'Buzz', 'Fizz', '37', '38', 'Fizz', 'Buzz', '41', 'Fizz', '43', '44', 'FizzBuzz', '46', '47', 'Fizz', '49', 'Buzz', 'Fizz', '52', '53', 'Fizz', 'Buzz', '56', 'Fizz', '58', '59', 'FizzBuzz', '61', '62', 'Fizz', '64', 'Buzz', 'Fizz', '67', '68', 'Fizz', 'Buzz', '71', 'Fizz', '73', '74', 'FizzBuzz', '76', '77', 'Fizz', '79', 'Buzz', 'Fizz', '82', '83', 'Fizz', 'Buzz', '86', 'Fizz', '88', '89', 'FizzBuzz', '91', '92', 'Fizz', '94', 'Buzz', 'Fizz', '97', '98', 'Fizz', 'Buzz']
+    self.assertEqual(output, expected)   
+
   # https://codegolf.stackexchange.com/questions/215449/  
   def test_sum1(self):
     program = ['Σ9%↕Σ9%='] 

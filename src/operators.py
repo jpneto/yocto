@@ -1003,7 +1003,71 @@ def make_sum_types(x):
   elif isinstance(x,list): 
     return Fraction(sum([make_sum_types(i) for i in x]))
 
-  
+
+def make_prod(stack):
+  x = stack.pop()
+  stack.append(make_prod_types(x))
+
+def make_prod_types(x):
+  if isinstance(x,Fraction): 
+    digits = str(int(x))
+    result = 1
+    for d in digits:
+      result *= int(d)
+    return Fraction(result)
+  elif isinstance(x,str): 
+    ords = [int(toOrd(c)) for c in x]
+    result = 1
+    for d in ords:
+      result *= d
+    return Fraction(result)
+  elif isinstance(x,list): 
+    prods = [make_prod_types(i) for i in x]
+    result = 1
+    for d in prods:
+      result *= d
+    return Fraction(result)
+
+def make_all(stack):
+  x = stack.pop()
+  stack.append(make_all_types(x))
+
+def make_all_types(x):
+  if isinstance(x,Fraction): 
+    return Fraction(1) if x!=0 else Fraction(0)
+  elif isinstance(x,str): 
+    ords = [int(toOrd(c)) for c in x]
+    result = 1
+    for d in ords:
+      result *= d
+    return Fraction(1) if result!=0 else Fraction(0)
+  elif isinstance(x,list): 
+    prods = [make_all_types(i) for i in x]
+    result = 1
+    for d in prods:
+      result *= d
+    return Fraction(1) if result!=0 else Fraction(0)
+
+def make_any(stack):
+  x = stack.pop()
+  stack.append(make_any_types(x))
+
+def make_any_types(x):
+  if isinstance(x,Fraction): 
+    return Fraction(1) if x!=0 else Fraction(0)
+  elif isinstance(x,str): 
+    ords = [int(toOrd(c)) for c in x]
+    result = 0
+    for d in ords:
+      result += d
+    return Fraction(1) if result>0 else Fraction(0)
+  elif isinstance(x,list): 
+    prods = [make_any_types(i) for i in x]
+    result = 0
+    for d in prods:
+      result += d
+    return Fraction(1) if result>0 else Fraction(0)
+
 def concatenate(stack):
   idx = stack.pop()
   lst = stack.pop()
@@ -1037,7 +1101,38 @@ def concatenate_types(x, y):
     #   return [ concatenate_types(i,j) for (i,j) in zip(x,cycle(y)) ]
     # else:
     #   return [ concatenate_types(i,j) for (i,j) in zip(cycle(x),y) ]
-   
+
+def list_difference(stack):
+  idx = stack.pop()
+  lst = stack.pop()
+  stack.append(list_difference_types(lst, idx))
+  
+def list_difference_types(x, y):
+  if isinstance(x,Fraction) and isinstance(y,Fraction):
+    result = ''.join(set(str(x))-set(str(y)))
+    return Fraction(result) if result!='' else ''
+  
+  elif isinstance(x,Fraction) and isinstance(y,str):
+    return ''.join(set(str(x))-set(y))
+  elif isinstance(x,str) and isinstance(y,Fraction):
+    return ''.join(set(x)-set(str(y)))
+
+  elif isinstance(x,str) and isinstance(y,str):
+    return ''.join(set(x)-set(y))
+  
+  elif isinstance(x,Fraction) and isinstance(y,list):
+    return [ list_difference_types(x,i) for i in y if i != x]
+  elif isinstance(x,list) and isinstance(y,Fraction):
+    return [ list_difference_types(i,y) for i in x if i != y]
+
+  elif isinstance(x,str) and isinstance(y,list):
+    return [ [list_difference_types(x,i)] for i in y if i != x]
+  elif isinstance(x,list) and isinstance(y,str):
+    return [ [list_difference_types(i,y)] for i in x if i != y]
+
+  elif isinstance(x,list) and isinstance(y,list):
+    return [elem for elem in x if elem not in y]    
+
 #############################  
 
 def vectorized_assign(stack):
@@ -1076,6 +1171,9 @@ def digits(stack):
   
 def print_newline(stack):
   print('')
+  
+def empty_str_list(stack):
+  stack.append([""])
   
 def println(stack, end):
   x = stack[-1]
@@ -1136,6 +1234,8 @@ mapping['Ạ'] = lower_letters
 mapping['Ḍ'] = digits
 mapping['¶'] = print_newline
 
+mapping['Ø'] = empty_str_list  # ['']
+
 # unary operators
 
 # these don't print empty strings, use ¶ instead
@@ -1162,10 +1262,12 @@ mapping['ḥ'] = init_list
 mapping['ṭ'] = last_list
 mapping['ḷ'] = invert
 mapping['Σ'] = make_sum
+mapping['Π'] = make_prod
+mapping['∧'] = make_all
+mapping['∨'] = make_any
 
-# mapping['ȧ'] = make_uppercase
-# mapping['ạ'] = make_lowercase
-
+# mapping[''] = make_uppercase
+# mapping[''] = make_lowercase
 
 # binary operators
 
@@ -1189,6 +1291,7 @@ mapping['|'] = apply_or
 mapping['&'] = apply_and
 mapping['⊻'] = apply_xor
 mapping['c'] = concatenate
+mapping['ŀ'] = list_difference
 
 mapping['i'] = index
 mapping['î'] = index_pop
@@ -1196,6 +1299,7 @@ mapping['Ḷ'] = make_multiple_list
 mapping['ȧ'] = append_list_begin
 mapping['ạ'] = append_list_end
 
-# terciary operators
+
+# ternary operators
 
 mapping['V'] = vectorized_assign

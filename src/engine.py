@@ -93,7 +93,10 @@ def run(program, stack, state, counter=0):
       
     elif symbol in 'ẇẋẏż':           # a variable definition
       idx = 'ẇẋẏż'.index(symbol)
-      state['vars']['wxyz'[idx]] = stack.pop()
+      x = stack.pop()
+      if isinstance(x,list):
+        x = list(x)
+      state['vars']['wxyz'[idx]] = x
       counter += 1
 
     elif symbol in 'wxyzï':          # a variable use
@@ -629,10 +632,10 @@ def compute_arity(function_code):
 # data     = []
 
 #program = ['50ẇ 0Lṫ{w}?']
-#program = ['ẇw2<{1}{w2-λw↓λ+}⁇.']  
-# program = ['↕,²,+.' , '1 1¹{ν0}R.'] 
-# data = [Fraction(5)]
-# runProgram(program, data, True)
+
+program = ['1…∨']
+data = []
+runProgram(program, data, True)
 
 ############
 
