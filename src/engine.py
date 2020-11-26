@@ -149,6 +149,10 @@ def run(program, stack, state, counter=0):
     elif symbol in '{':             # block expression
       block, counter = readBlock(code, counter+1)  # +1 skips '{' 
       state['blocks'].append(block)
+
+    elif symbol in '¨':             # one char block
+      state['blocks'].append(code[counter+1])
+      counter += 2
     
     elif symbol in op.mapping:      # default operation
       operation = op.mapping[symbol]
@@ -633,9 +637,9 @@ def compute_arity(function_code):
 
 #program = ['50ẇ 0Lṫ{w}?']
 
-program = ['1…∨']
-data = []
-runProgram(program, data, True)
+# program = ['↕¹²>¨*¨÷⁇','┅↑1 0Ṡ']
+# data = [Fraction(20)]
+# runProgram(program, data, True)
 
 ############
 

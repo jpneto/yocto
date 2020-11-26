@@ -318,12 +318,22 @@ class TestStringMethods(unittest.TestCase):
     self.assertEqual(output, expected)   
 
   # https://codegolf.stackexchange.com/questions/215449/  
-  def test_sum1(self):
-    program = ['Σ9%↕Σ9%='] 
-    data=["HMCZQZZRC", "SIQYOBXK"]
+  def test_codegolf1(self):
+    program  = ['Σ9%↕Σ9%='] 
+    data     = ["HMCZQZZRC", "SIQYOBXK"]
     output   = runProgram(program, data)
     expected = 1
     self.assertEqual(output, expected)   
+    
+  # https://codegolf.stackexchange.com/questions/215607/
+  def test_codegolf2(self):
+    program  = ['↕¹²>¨*¨÷⁇','┅↑1 0Ṡ'] 
+    data     = [Fraction(20)]
+    output   = runProgram(program, data)
+    expected = [1, 2, 6, 1, 5, 30, 4, 32, 3, 30, 2, 24, 1, 14, 210, 13, 221, 12, 228, 11, 231]
+    self.assertEqual(output, expected)   
+    
+  
         
 if __name__ == '__main__':
     unittest.main()
