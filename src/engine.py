@@ -637,9 +637,7 @@ def compute_arity(function_code):
 
 #program = ['50ẇ 0Lṫ{w}?']
 
-# program = ['↕¹²>¨*¨÷⁇','┅↑1 0Ṡ']
-# data = [Fraction(20)]
-# runProgram(program, data, True)
+
 
 ############
 

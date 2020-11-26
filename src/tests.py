@@ -333,7 +333,34 @@ class TestStringMethods(unittest.TestCase):
     expected = [1, 2, 6, 1, 5, 30, 4, 32, 3, 30, 2, 24, 1, 14, 210, 13, 221, 12, 228, 11, 231]
     self.assertEqual(output, expected)   
     
-  
-        
+  # https://codegolf.stackexchange.com/questions/215522/
+  def test_codegolf3(self):
+    program = ['"uber"↕+','w*','"suv""black""plus""xl"’xẹ0Ṁ','1=','↕ẇ1Ṁ20≤3Ḟl↓ẇδ2wî']
+    data = [Fraction(30), 
+            [Fraction(0.3), Fraction(0.5), Fraction(0.7), 
+             Fraction(1), Fraction(1.3)]]
+    output   = runProgram(program, data)
+    expected = 'uberxl'
+    self.assertEqual(output, expected)   
+
+  def test_codegolf3b(self):
+    program = ['"uber"↕+','w*','"suv""black""plus""xl"’xẹ0Ṁ','1=','↕ẇ1Ṁ20≤3Ḟl↓ẇδ2wî']
+    data = [Fraction(20), 
+            [Fraction(0.3), Fraction(0.5), Fraction(0.7), 
+             Fraction(1), Fraction(1.3)]]
+    output   = runProgram(program, data)
+    expected = 'uberblack'
+    self.assertEqual(output, expected)   
+
+  def test_codegolf3c(self):
+    program = ['"uber"↕+','w*','"suv""black""plus""xl"’xẹ0Ṁ','1=','↕ẇ1Ṁ20≤3Ḟl↓ẇδ2wî']
+    data = [Fraction(15), 
+            [Fraction(0.3), Fraction(0.5), Fraction(0.7), 
+             Fraction(1), Fraction(1.3)]]
+    output   = runProgram(program, data)
+    expected = 'ubersuv'
+    self.assertEqual(output, expected)   
+
+    
 if __name__ == '__main__':
     unittest.main()

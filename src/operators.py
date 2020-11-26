@@ -931,7 +931,7 @@ def index_types(x, y):
   elif isinstance(x,Fraction) and isinstance(y,list):
     return [ index_types(x,i) for i in y ]
   elif isinstance(x,list) and isinstance(y,Fraction):
-    return [ index_types(i,y) for i in x ]
+    return x[int(y)] 
 
   elif isinstance(x,str) and isinstance(y,list):
     return [ [index_types(x,i)] for i in y ]
