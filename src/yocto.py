@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# To run in command line mode:
+#   python src\yocto.py 1 1 < egs\t.y
+
 import io
 import sys
 from fractions import Fraction
